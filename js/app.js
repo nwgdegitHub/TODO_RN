@@ -36,6 +36,7 @@ export default class App extends Component{
 		this.handleToggleComplete = this.handleToggleComplete.bind(this);
   }
 
+// 点击了底部的切换按钮
 	handleFilter(filter) {
 	 this.setState({
 		 items:filterItems(filter, this.state.items),
@@ -78,7 +79,7 @@ export default class App extends Component{
   renderItem(data){
 		console.log(data)
 		if(!data)return;
-		debugger
+
     return (
 			<Row
 				key={data.item.key}
@@ -101,8 +102,9 @@ export default class App extends Component{
 		});
   }
 
-//选择一条
+//点击item开关
 	handleToggleComplete(key, complete) {
+		debugger
     const newItems = this.state.items.map((item) => {
       if (item.key !== key) return item;
       return {
@@ -111,8 +113,9 @@ export default class App extends Component{
       }
     })
     this.setState({
+			...this.state,
 			items: newItems,
-			...this.state
+
 		})
   }
 
