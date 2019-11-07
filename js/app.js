@@ -11,6 +11,14 @@ import Header from './header';
 import Footer from './footer';
 import Row from './row';
 
+const filterItems = (filter, items) => {
+  return items.filter((item) => {
+    if (filter === "ALL") return true;
+    if (filter === "ACTIVE") return !item.complete;
+    if (filter === "COMPLETED") return item.complete;
+  })
+}
+
 export default class App extends Component{
 
   constructor(props){
@@ -18,14 +26,25 @@ export default class App extends Component{
     this.state = {
       allComplete:false,
       value:'',
-      items:[]
+      items:[],
+			filter: "ALL",
     }
     /* 不要忘了在constructor中bind method */
     this.handleAddItem = this.handleAddItem.bind(this);
     this.handleToggleAllComplete = this.handleToggleAllComplete.bind(this);
+		this.handleRemoveItem = this.handleRemoveItem.bind(this);
+		this.handleToggleComplete = this.handleToggleComplete.bind(this);
   }
 
-  handleAddItem(){
+	handleFilter(filter) {
+	 this.setState({
+		 items:filterItems(filter, this.state.items),
+		 filter:filter
+	 })
+ }
+
+//添加一条数据
+  handleAddItem(filter){
     if(!this.state.value)return;
     const newItems = [
       ...this.state.items,
@@ -42,6 +61,7 @@ export default class App extends Component{
     })
   }
 
+//选择所有
   handleToggleAllComplete() {
     const complete = !this.state.allComplete;
     const newItems = this.state.items.map((item) => ({
@@ -56,14 +76,32 @@ export default class App extends Component{
   }
 
   renderItem(data){
+		console.log(data)
+		if(!data)return;
+		debugger
     return (
 			<Row
-       onComplete={(complete) => this.handleToggleComplete(key, complete)}
-       {...value}
+				key={data.item.key}
+	      onRemove={() => this.handleRemoveItem(data.item.key)}
+       	onComplete={(complete) => this.handleToggleComplete(data.item.key, complete)}
+        {...data.item}
+
       />
     )
   }
 
+	//删除一条item
+	handleRemoveItem(key) {
+
+    const newItems = this.state.items.filter((item) => {
+      return item.key !== key
+    })
+    this.setState({
+			items:newItems
+		});
+  }
+
+//选择一条
 	handleToggleComplete(key, complete) {
     const newItems = this.state.items.map((item) => {
       if (item.key !== key) return item;
@@ -78,22 +116,28 @@ export default class App extends Component{
 		})
   }
 
+
+
   render(){
+		const filter = this.state.filter;
     return(
       <View style = {styles.container}>
         <Header
           value={this.state.value}
-          onAddItem={this.handleAddItem}
+          onAddItem={(filter)=>this.handleAddItem(filter)}
           onChange={(value) => this.setState({ value })}
         />
         <View style = {styles.content}>
           <FlatList
+						keyExtractor={item=>""+item.key}
             style={{backgroundColor: '#FFF'}}
             data={this.state.items}
             renderItem={data=>this.renderItem(data)}
           />
         </View>
-        <Footer/>
+				<Footer
+          onFilter={(filter)=>this.handleFilter(filter)}
+          filter={this.state.filter} />
       </View>
     )
   }
