@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import Header from './header';
 import Footer from './footer';
+import Row from './row';
 
 export default class App extends Component{
 
@@ -56,13 +57,26 @@ export default class App extends Component{
 
   renderItem(data){
     return (
-      <View>
-        <Text>{data.item.text}</Text>
-      </View>
+			<Row
+       onComplete={(complete) => this.handleToggleComplete(key, complete)}
+       {...value}
+      />
     )
   }
 
-
+	handleToggleComplete(key, complete) {
+    const newItems = this.state.items.map((item) => {
+      if (item.key !== key) return item;
+      return {
+        ...item,
+        complete
+      }
+    })
+    this.setState({
+			items: newItems,
+			...this.state
+		})
+  }
 
   render(){
     return(

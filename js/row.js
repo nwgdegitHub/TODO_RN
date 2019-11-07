@@ -8,12 +8,23 @@ import {
 
 export default class Row extends Component{
   render(){
-    return(
+		const { complete } = this.props;
+    return (
       <View style={styles.container}>
         <Switch
           value={complete}
+          onValueChange={this.props.onComplete}
         />
+        <View style={styles.textWrap}>
+          <Text style={[styles.text, complete && styles.complete]}>{this.props.text}</Text>
+        </View>
       </View>
     );
   }
 }
+
+const styles = StyleSheet.create({
+	complete: {
+    textDecorationLine: "line-through"
+  },
+})
