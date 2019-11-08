@@ -10,21 +10,38 @@ import {
 export default class Footer extends Component{
 
   render(){
-		const {filter} = this.props;
+		debugger
+		const {filter,isShowClearCompleted} = this.props;
     return(
-			<View style={styles.container}>
-				<TouchableOpacity style={[styles.filter, filter === "ALL" && styles.selected]}
-	onPress={() => this.props.onFilter("ALL")}>
-					<Text>All</Text>
-				</TouchableOpacity>
-				<TouchableOpacity style={[styles.filter, filter === "ALL" && styles.selected]}
-	onPress={() => this.props.onFilter("ACTIVE")}>
-					<Text>Active</Text>
-				</TouchableOpacity>
-				<TouchableOpacity style={[styles.filter, filter === "ALL" && styles.selected]}
-	onPress={() => this.props.onFilter("COMPLETED")}>
-					<Text>Completed</Text>
-				</TouchableOpacity>
+			<View style={{marginLeft: 0,marginRight: 80,flexDirection: 'row'}}>
+
+				<View style={{justifyContent: 'center',marginLeft: 5}}>
+						<Text style={{fontSize: 12}}>{this.props.count} items left </Text>
+				</View>
+
+
+				<View style={styles.container}>
+					<TouchableOpacity style={[styles.filter, filter === "ALL" && styles.selected]}
+		onPress={() => this.props.onFilter("ALL")}>
+						<Text>All</Text>
+					</TouchableOpacity>
+					<TouchableOpacity style={[styles.filter, filter === "ACTIVE" && styles.selected]}
+		onPress={() => this.props.onFilter("ACTIVE")}>
+						<Text>Active</Text>
+					</TouchableOpacity>
+					<TouchableOpacity style={[styles.filter, filter === "COMPLETED" && styles.selected]}
+		onPress={() => this.props.onFilter("COMPLETED")}>
+						<Text>Completed</Text>
+					</TouchableOpacity>
+				</View>
+
+
+				<View style={{justifyContent: 'center',marginRight: 5}}>
+					<TouchableOpacity>
+						<Text style={{fontSize: 10,textDecorationLine: 'underline'}}>{isShowClearCompleted?'Clear Completed':''}</Text>
+					</TouchableOpacity>
+				</View>
+
 			</View>
     );
   }

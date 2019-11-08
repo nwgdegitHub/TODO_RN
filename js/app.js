@@ -119,7 +119,26 @@ export default class App extends Component{
 		})
   }
 
+	//计算剩余的items
+	handleLeftItems(items){
 
+		const arrs = items.filter( item => !item.complete);
+		return arrs.length;
+	}
+
+	//计算已完成的items
+	handleCompletedItems(items){
+
+		const arrs = items.filter( item => item.complete);
+		if(arrs.length === 0){
+			return false;
+		}
+		else
+		{
+			return true;
+		}
+
+	}
 
   render(){
 		const filter = this.state.filter;
@@ -129,6 +148,7 @@ export default class App extends Component{
           value={this.state.value}
           onAddItem={(filter)=>this.handleAddItem(filter)}
           onChange={(value) => this.setState({ value })}
+					onToggleAllComplete={()=>this.handleToggleAllComplete()}
         />
         <View style = {styles.content}>
           <FlatList
@@ -139,8 +159,11 @@ export default class App extends Component{
           />
         </View>
 				<Footer
+					count={this.handleLeftItems(this.state.items)}
           onFilter={(filter)=>this.handleFilter(filter)}
-          filter={this.state.filter} />
+          filter={this.state.filter}
+					isShowClearCompleted={this.handleCompletedItems(this.state.items)}
+				/>
       </View>
     )
   }

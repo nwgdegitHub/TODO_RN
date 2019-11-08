@@ -11,7 +11,7 @@ import {
 export default class Row extends Component{
   render(){
 		console.log(this.props)
-		const { complete } = this.props;
+		const { complete} = this.props;
     return (
       <View style={styles.container}>
 
@@ -27,7 +27,7 @@ export default class Row extends Component{
 				  style={{marginRight: 10}}
 				  title="删除"
 				  color="#841584"
-				  accessibilityLabel="Learn more about this purple button"
+
 				/>
       </View>
     );
@@ -44,6 +44,8 @@ const styles = StyleSheet.create({
 		marginLeft: 10,
 	},
 	complete: {
-    textDecorationLine: "line-through"
+    textDecorationLine: "line-through",
+		color: 'gray',
+
   },
 })
