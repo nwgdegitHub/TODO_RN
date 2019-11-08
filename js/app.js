@@ -10,6 +10,9 @@ import {
 import Header from './header';
 import Footer from './footer';
 import Row from './row';
+import AsyncStorage from '@react-native-community/async-storage';
+
+const TODO_SAVE_KEY = 'todoStoreKey';
 
 const filterItems = (filter, items) => {
   return items.filter((item) => {
@@ -23,12 +26,17 @@ export default class App extends Component{
 
   constructor(props){
     super(props);
-    this.state = {
-      allComplete:false,
-      value:'',
-      items:[],
+
+		this.state = {
+			allComplete:false,
+			value:'',
+			items:[],
+			allItems:[],
+			activeItems:[],
+			completeItems:[],
 			filter: "ALL",
-    }
+		}
+		this.getStoreData();
     /* 不要忘了在constructor中bind method */
     this.handleAddItem = this.handleAddItem.bind(this);
     this.handleToggleAllComplete = this.handleToggleAllComplete.bind(this);
@@ -36,12 +44,70 @@ export default class App extends Component{
 		this.handleToggleComplete = this.handleToggleComplete.bind(this);
   }
 
+	//取存储中的数据 同时刷新界面
+	getStoreData(){
+		tmpItems = [];
+		tmpAllItems = [];
+		tmpActiveItems = [];
+		tmpCompleteItems = [];
+		AsyncStorage.getItem(TODO_SAVE_KEY, (error, result) => {
+				if (!error) {
+						tmpItems = JSON.parse(result);
+						for(j = 0,len = tmpItems.length; j < len; j++) {
+							tmpAllItems.push(tmpItems[j]);
+
+					  	if(!tmpItems[j].complete){
+								tmpActiveItems.push(tmpItems[j]);
+							}
+							else
+							{
+								tmpCompleteItems.push(tmpItems[j]);
+							}
+						}
+						this.setState({
+							...this.state,
+							items:tmpItems,
+							allItems:tmpAllItems,
+							activeItems:tmpActiveItems,
+							completeItems:tmpCompleteItems
+						})
+				}
+		});
+	}
+
+	//存数据 同时刷新界面
+	saveStoreData(newItems){
+
+				//存储到本地
+				AsyncStorage.setItem(TODO_SAVE_KEY, JSON.stringify(newItems), (error, result) => {
+						if (!error) {
+
+						}
+				});
+
+	}
+
 // 点击了底部的切换按钮
 	handleFilter(filter) {
-	 this.setState({
-		 items:filterItems(filter, this.state.items),
-		 filter:filter
-	 })
+		if(filter === 'ALL'){
+			this.setState({
+	 		 items:this.state.allItems,
+	 		 filter:filter
+	 	 })
+		}
+		else if (filter === 'ACTIVE') {
+			this.setState({
+	 		 items:this.state.activeItems,
+	 		 filter:filter
+	 	 })
+		}
+		else if (filter === 'COMPLETED') {
+			this.setState({
+	 		 items:this.state.completeItems,
+	 		 filter:filter
+	 	 })
+		}
+
  }
 
 //添加一条数据
@@ -55,11 +121,13 @@ export default class App extends Component{
         complete:false
       }
     ]
+		this.saveStoreData(newItems);
 
-    this.setState({
-      items:newItems,
-      value:''
-    })
+		this.setState({
+			items:newItems,
+			value:''
+		})
+
   }
 
 //选择所有
@@ -70,6 +138,9 @@ export default class App extends Component{
       complete
     }))
     console.table(newItems);
+
+		this.saveStoreData(newItems);
+
     this.setState({
       items: newItems,
       allComplete: complete
@@ -97,14 +168,33 @@ export default class App extends Component{
     const newItems = this.state.items.filter((item) => {
       return item.key !== key
     })
+
+		this.saveStoreData(newItems);
+
+		tmpActiveItems = [];
+		tmpCompleteItems = [];
+		for(j = 0,len = newItems.length; j < len; j++) {
+
+			if(!newItems[j].complete){
+				tmpActiveItems.push(newItems[j]);
+			}
+			else
+			{
+				tmpCompleteItems.push(newItems[j]);
+			}
+		}
+
     this.setState({
-			items:newItems
+			items:newItems,
+			allItems:newItems,
+			activeItems:tmpActiveItems,
+			completeItems:tmpCompleteItems
 		});
   }
 
 //点击item开关
 	handleToggleComplete(key, complete) {
-		debugger
+
     const newItems = this.state.items.map((item) => {
       if (item.key !== key) return item;
       return {
@@ -112,6 +202,14 @@ export default class App extends Component{
         complete
       }
     })
+
+		//存储到本地
+		AsyncStorage.setItem(TODO_SAVE_KEY, JSON.stringify(newItems), (error, result) => {
+				if (!error) {
+					this.getStoreData();
+				}
+		});
+
     this.setState({
 			...this.state,
 			items: newItems,
@@ -140,6 +238,34 @@ export default class App extends Component{
 
 	}
 
+	//清除已经完成的
+	handClearCompleted(items){
+		//取出active 的items
+		tmpActiveItems = [];
+		tmpCompleteItems = [];
+		for(j = 0,len = items.length; j < len; j++) {
+
+			if(!items[j].complete){
+				tmpActiveItems.push(items[j]);
+			}
+			else
+			{
+				tmpCompleteItems.push(items[j]);
+			}
+		}
+		const arrs = items.filter(item=>!item.complete);//false的留下来
+
+		this.saveStoreData(arrs);
+
+		this.setState({
+			items:arrs,
+			activeItems:tmpActiveItems,
+			completeItems:tmpCompleteItems
+		})
+
+		this.getStoreData();
+	}
+
   render(){
 		const filter = this.state.filter;
     return(
@@ -163,6 +289,7 @@ export default class App extends Component{
           onFilter={(filter)=>this.handleFilter(filter)}
           filter={this.state.filter}
 					isShowClearCompleted={this.handleCompletedItems(this.state.items)}
+					onClearCompleted={()=>this.handClearCompleted(this.state.items)}
 				/>
       </View>
     )

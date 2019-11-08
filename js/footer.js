@@ -10,7 +10,7 @@ import {
 export default class Footer extends Component{
 
   render(){
-		debugger
+
 		const {filter,isShowClearCompleted} = this.props;
     return(
 			<View style={{marginLeft: 0,marginRight: 80,flexDirection: 'row'}}>
@@ -37,7 +37,7 @@ export default class Footer extends Component{
 
 
 				<View style={{justifyContent: 'center',marginRight: 5}}>
-					<TouchableOpacity>
+					<TouchableOpacity onPress={()=>this.props.onClearCompleted()}>
 						<Text style={{fontSize: 10,textDecorationLine: 'underline'}}>{isShowClearCompleted?'Clear Completed':''}</Text>
 					</TouchableOpacity>
 				</View>
