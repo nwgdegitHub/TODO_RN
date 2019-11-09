@@ -13,23 +13,27 @@ export default class Row extends Component{
 		console.log(this.props)
 		const { complete} = this.props;
     return (
-      <View style={styles.container}>
+      <View style={{flex: 1}}>
 
-        <View style={{flexDirection: 'row'}}>
-					<Switch
-	          value={complete}
-	          onValueChange={this.props.onComplete}
-	        />
-          <Text style={[styles.text, complete && styles.complete]}>{this.props.text}</Text>
-        </View>
-				<Button
-					onPress = {this.props.onRemove}
-				  style={{marginRight: 10}}
-				  title="删除"
-				  color="#841584"
+				<View style={styles.container}>
 
-				/>
-      </View>
+					<View style={{flexDirection: 'row',height: 40}}>
+						<Switch
+							value={complete}
+							onValueChange={this.props.onComplete}
+						/>
+						<Text style={[styles.text, complete && styles.complete]}>{this.props.text}</Text>
+					</View>
+					<Button
+						onPress = {this.props.onRemove}
+						style={{marginRight: 10}}
+						title="删除"
+						color="#841584"
+					/>
+
+				</View>
+				<View style={{backgroundColor: 'gray',height: 1}}/>
+			</View>
     );
   }
 }

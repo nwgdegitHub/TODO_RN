@@ -52,7 +52,7 @@ export default class App extends Component{
 		tmpCompleteItems = [];
 		AsyncStorage.getItem(TODO_SAVE_KEY, (error, result) => {
 				if (!error) {
-						tmpItems = JSON.parse(result);
+						tmpItems = JSON.parse(result) || [];
 						for(j = 0,len = tmpItems.length; j < len; j++) {
 							tmpAllItems.push(tmpItems[j]);
 
@@ -299,9 +299,13 @@ export default class App extends Component{
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F5F5F5"
+    backgroundColor: "#F5F5F5",
+		marginLeft: 20,
+		marginTop: 100,
+		marginRight: 20,
+		marginBottom: 100
   },
   content: {
-    flex: 1
+    
   }
 })
